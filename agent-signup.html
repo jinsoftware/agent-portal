@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Agent Sign Up</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Agent Sign Up</h2>
+    <input type="text" id="signup-username" placeholder="Username"><br>
+    <input type="password" id="signup-password" placeholder="Password"><br>
+    <button onclick="signup()">Sign Up</button>
+  </div>
+
+  <script>
+    function signup() {
+      const username = document.getElementById('signup-username').value;
+      const password = document.getElementById('signup-password').value;
+      localStorage.setItem(`agent_${username}`, JSON.stringify({ username, password }));
+      alert("Signup successful. Please login.");
+      window.location.href = "agent-login.html";
+    }
+  </script>
+</body>
+</html>
