@@ -6,31 +6,33 @@
   <title>Portal Home</title>
   <link rel="stylesheet" href="style.css">
   <style>
+    * {
+      box-sizing: border-box;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background: #f0f8ff;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
     .center {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      height: 100%;
       text-align: center;
+      z-index: 2;
+      position: relative;
     }
     .macs-title {
       font-size: 2.5rem;
       font-weight: bold;
       color: #333;
       margin-bottom: 20px;
-      position: relative;
-    }
-    .macs-title::after {
-      content: "💲💲";
-      position: absolute;
-      right: -40px;
-      top: 0;
-      animation: bounce 1s infinite;
-    }
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
     }
     .btn-container {
       display: flex;
@@ -55,6 +57,20 @@
       justify-content: center;
       gap: 8px;
     }
+    .dollar {
+      position: absolute;
+      top: -50px;
+      font-size: 20px;
+      animation: fall linear infinite;
+      color: green;
+      z-index: 1;
+    }
+    @keyframes fall {
+      to {
+        transform: translateY(110vh);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -66,5 +82,23 @@
       <a href="#" class="btn red jin-login"><span>😈</span> Jin Login</a>
     </div>
   </div>
+
+  <!-- Dollar Rain Script -->
+  <script>
+    const createDollar = () => {
+      const dollar = document.createElement('div');
+      dollar.classList.add('dollar');
+      dollar.innerText = '💲';
+      dollar.style.left = Math.random() * 100 + 'vw';
+      dollar.style.animationDuration = (2 + Math.random() * 3) + 's';
+      document.body.appendChild(dollar);
+
+      setTimeout(() => {
+        dollar.remove();
+      }, 5000);
+    };
+
+    setInterval(createDollar, 200);
+  </script>
 </body>
 </html>
