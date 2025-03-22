@@ -30,7 +30,33 @@
       </select><br>
       <textarea placeholder="Reason of Drop"></textarea><br>
       <button type="submit">Submit</button>
-    </form>
+    </<form id="customer-form" onsubmit="saveReport(event)">
+><script>
+  function saveReport(e) {
+    e.preventDefault(); // Form reload होने से रोकेगा
+
+    const form = document.getElementById('customer-form');
+
+    const report = {
+      name: form[0].value,
+      phone: form[1].value,
+      address: form[2].value,
+      zip: form[3].value,
+      email: form[4].value,
+      banks: form[5].value,
+      devices: form[6].value,
+      with: form[7].value,
+      reason: form[8].value,
+    };
+
+    const key = `report_${Date.now()}`;
+    localStorage.setItem(key, JSON.stringify(report));
+
+    alert('Customer report submitted successfully!');
+    form.reset();
+  }
+</script>
+
   </div>
 
   <script>
