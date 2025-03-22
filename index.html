@@ -5,12 +5,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portal Home</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .macs-title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .macs-title::after {
+      content: "💲💲";
+      position: absolute;
+      right: -40px;
+      top: 0;
+      animation: bounce 1s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .btn-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+      max-width: 250px;
+    }
+    .btn {
+      padding: 10px 20px;
+      text-decoration: none;
+      color: white;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .blue { background-color: #007BFF; }
+    .green { background-color: #28A745; }
+    .red { background-color: #DC3545; }
+    .jin-login {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+  </style>
 </head>
 <body>
   <div class="container center">
-    <h1>Welcome to the Portal</h1>
-    <a href="agent-login.html" class="btn blue">Agent Login</a>
-    <a href="agent-signup.html" class="btn green">Agent Sign Up</a>
+    <div class="macs-title">MACS</div>
+    <div class="btn-container">
+      <a href="agent-login.html" class="btn blue">Agent Login</a>
+      <a href="agent-signup.html" class="btn green">Agent Sign Up</a>
+      <a href="#" class="btn red jin-login"><span>😈</span> Jin Login</a>
+    </div>
   </div>
 </body>
 </html>
