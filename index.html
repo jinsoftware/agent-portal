@@ -1,0 +1,138 @@
+// Complete working React code for the described portal layout
+// Dependencies: React, React Router DOM, Tailwind CSS
+
+// index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import AgentSignup from './pages/AgentSignup';
+import AgentLogin from './pages/AgentLogin';
+import AgentPortal from './pages/AgentPortal';
+import './index.css';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/agent-signup" element={<AgentSignup />} />
+      <Route path="/agent-login" element={<AgentLogin />} />
+      <Route path="/agent-portal" element={<AgentPortal />} />
+    </Routes>
+  </BrowserRouter>
+);
+
+// pages/Home.js
+export default function Home() {
+  return (
+    <div className="p-10 text-center">
+      <h1 className="text-3xl font-bold mb-6">Welcome to the Portal</h1>
+      <div className="flex justify-center gap-4">
+        <a href="/agent-login" className="px-6 py-3 bg-blue-500 text-white rounded-xl shadow">Agent Login</a>
+        <a href="/agent-signup" className="px-6 py-3 bg-green-500 text-white rounded-xl shadow">Agent Sign Up</a>
+      </div>
+    </div>
+  );
+}
+
+// pages/AgentSignup.js
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+export default function AgentSignup() {
+  const [form, setForm] = useState({ username: '', password: '' });
+  const navigate = useNavigate();
+
+  const handleSignup = () => {
+    localStorage.setItem(`agent_${form.username}`, JSON.stringify(form));
+    alert('Signup successful! Please log in.');
+    navigate('/agent-login');
+  };
+
+  return (
+    <div className="p-6 max-w-md mx-auto">
+      <h2 className="text-2xl font-bold mb-4">Agent Sign Up</h2>
+      <input placeholder="Username" className="mb-2 w-full p-2 border rounded" onChange={(e) => setForm({ ...form, username: e.target.value })} />
+      <input placeholder="Password" type="password" className="mb-4 w-full p-2 border rounded" onChange={(e) => setForm({ ...form, password: e.target.value })} />
+      <button className="bg-green-500 text-white px-4 py-2 rounded" onClick={handleSignup}>Sign Up</button>
+    </div>
+  );
+}
+
+// pages/AgentLogin.js
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+export default function AgentLogin() {
+  const [form, setForm] = useState({ username: '', password: '' });
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    const stored = JSON.parse(localStorage.getItem(`agent_${form.username}`));
+    if (stored && stored.password === form.password) {
+      localStorage.setItem('loggedInAgent', form.username);
+      navigate('/agent-portal');
+    } else {
+      alert('Invalid credentials');
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-md mx-auto">
+      <h2 className="text-2xl font-bold mb-4">Agent Login</h2>
+      <input placeholder="Username" className="mb-2 w-full p-2 border rounded" onChange={(e) => setForm({ ...form, username: e.target.value })} />
+      <input placeholder="Password" type="password" className="mb-4 w-full p-2 border rounded" onChange={(e) => setForm({ ...form, password: e.target.value })} />
+      <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleLogin}>Login</button>
+    </div>
+  );
+}
+
+// pages/AgentPortal.js
+import { useNavigate } from 'react-router-dom';
+import CustomerForm from '../components/CustomerForm';
+
+export default function AgentPortal() {
+  const username = localStorage.getItem('loggedInAgent');
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('loggedInAgent');
+    navigate('/');
+  };
+
+  return (
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Agent Portal</h2>
+        <div className="flex items-center gap-4">
+          <span className="text-sm font-semibold">{username}</span>
+          <button className="text-blue-500" onClick={() => alert('Edit Profile Coming Soon')}>Edit Profile</button>
+          <button className="text-red-500" onClick={handleLogout}>Logout</button>
+        </div>
+      </div>
+      <CustomerForm />
+    </div>
+  );
+}
+
+// components/CustomerForm.js
+export default function CustomerForm() {
+  return (
+    <form className="space-y-4">
+      <input placeholder="Customer Name" className="w-full p-2 border rounded" />
+      <input placeholder="Phone" className="w-full p-2 border rounded" />
+      <input placeholder="Address" className="w-full p-2 border rounded" />
+      <input placeholder="Zip Code" className="w-full p-2 border rounded" />
+      <input placeholder="Email" className="w-full p-2 border rounded" />
+      <input placeholder="Bank Names" className="w-full p-2 border rounded" />
+      <input placeholder="Devices" className="w-full p-2 border rounded" />
+      <select className="w-full p-2 border rounded">
+        <option>Customer Alone</option>
+        <option>Customer With Someone</option>
+      </select>
+      <textarea placeholder="Reason of Drop" className="w-full p-2 border rounded"></textarea>
+      <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Submit</button>
+    </form>
+  );
+}
