@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Jin Login</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f0f0;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 300px;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>😈 Jin Login</h2>
+    <input type="text" id="jin-username" placeholder="Username"><br><br>
+    <input type="password" id="jin-password" placeholder="Password"><br><br>
+    <button onclick="login()">Login</button>
+  </div>
+
+  <script>
+    function login() {
+      const username = document.getElementById('jin-username').value;
+      const password = document.getElementById('jin-password').value;
+
+      if (username === 'jin' && password === 'synonym117') {
+        window.location.href = 'jin-portal.html';
+      } else {
+        alert('Incorrect credentials!');
+      }
+    }
+  </script>
+</body>
+</html>
