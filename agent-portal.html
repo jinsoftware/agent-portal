@@ -1,41 +1,150 @@
-<form id="customer-form" onsubmit="saveReport(event)">
-  <input placeholder="Customer Name"><br>
-  <input placeholder="Phone"><br>
-  <input placeholder="Address"><br>
-  <input placeholder="Zip Code"><br>
-  <input placeholder="Email"><br>
-  <input placeholder="Bank Names"><br>
-  <input placeholder="Devices"><br>
-  <select>
-    <option>Customer Alone</option>
-    <option>Customer With Someone</option>
-  </select><br>
-  <textarea placeholder="Reason of Drop"></textarea><br>
-  <button type="submit">Submit</button>
-</form>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Agent Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #2b5876, #4e4376);
+      color: #fff;
+      height: 100vh;
+    }
 
-<script>
-  function saveReport(e) {
-    e.preventDefault(); // Prevent reload
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      margin-top: 30px;
+    }
 
-    const form = document.getElementById('customer-form');
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
 
-    const report = {
-      name: form[0].value,
-      phone: form[1].value,
-      address: form[2].value,
-      zip: form[3].value,
-      email: form[4].value,
-      banks: form[5].value,
-      devices: form[6].value,
-      with: form[7].value,
-      reason: form[8].value,
-    };
+    h2, h3 {
+      text-align: center;
+      color: #ffd700;
+    }
 
-    // Save to localStorage
-    localStorage.setItem('latestReport', JSON.stringify(report));
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
 
-    // Redirect to jin-portal.html
-    window.location.href = 'jin-portal.html';
-  }
-</script>
+    input, select, textarea {
+      background: #fff;
+      color: #333;
+    }
+
+    button {
+      background: #00c9a7;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #008e76;
+    }
+
+    .header button {
+      margin-left: 10px;
+      padding: 8px 12px;
+      background: #ff4d4d;
+    }
+
+    .header button:last-child {
+      background: #4caf50;
+    }
+
+    #agent-name {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body onload="loadUser()">
+
+  <div class="container">
+    <div class="header">
+      <h2>Agent Portal</h2>
+      <div>
+        <span id="agent-name">Loading...</span>
+        <button onclick="logout()">Logout</button>
+        <button onclick="alert('Edit Profile Coming Soon')">Edit Profile</button>
+      </div>
+    </div>
+
+    <h3>Customer Form</h3>
+    <form id="customer-form" onsubmit="saveReport(event)">
+      <input placeholder="Customer Name" required>
+      <input placeholder="Phone" required>
+      <input placeholder="Address" required>
+      <input placeholder="Zip Code" required>
+      <input placeholder="Email" required>
+      <input placeholder="Bank Names" required>
+      <input placeholder="Devices" required>
+      <select required>
+        <option disabled selected>Select Situation</option>
+        <option>Customer Alone</option>
+        <option>Customer With Someone</option>
+      </select>
+      <textarea placeholder="Reason of Drop" required></textarea>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    function loadUser() {
+      const name = localStorage.getItem('loggedInAgent');
+      document.getElementById('agent-name').innerText = name || 'No user';
+    }
+
+    function logout() {
+      localStorage.removeItem('loggedInAgent');
+      window.location.href = "index.html";
+    }
+
+    function saveReport(e) {
+      e.preventDefault();
+
+      const form = document.getElementById('customer-form');
+
+      const report = {
+        name: form[0].value,
+        phone: form[1].value,
+        address: form[2].value,
+        zip: form[3].value,
+        email: form[4].value,
+        banks: form[5].value,
+        devices: form[6].value,
+        with: form[7].value,
+        reason: form[8].value,
+      };
+
+      // Save to localStorage
+      localStorage.setItem('latestReport', JSON.stringify(report));
+
+      // Open jin-portal.html in new tab
+      window.open('jin-portal.html', '_blank');
+
+      // Reset form
+      form.reset();
+    }
+  </script>
+
+</body>
+</html>
