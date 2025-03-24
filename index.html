@@ -3,103 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Portal Home</title>
-  <link rel="stylesheet" href="style.css">
+  <title>MACS Portal Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
     }
+
     body, html {
       margin: 0;
       padding: 0;
-      font-family: sans-serif;
-      background: #f0f8ff;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to bottom right, #e9eff5, #ffffff);
       height: 100vh;
-      overflow: hidden;
-      position: relative;
-    }
-    .center {
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100%;
+    }
+
+    .container {
       text-align: center;
-      z-index: 2;
-      position: relative;
+      padding: 40px 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 90%;
     }
+
     .macs-title {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 20px;
+      font-size: 36px;
+      font-weight: 700;
+      color: #0a3871;
+      margin-bottom: 5px;
     }
-    .btn-container {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      width: 100%;
-      max-width: 250px;
-    }
-    .btn {
-      padding: 10px 20px;
-      text-decoration: none;
-      color: white;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-    .blue { background-color: #007BFF; }
-    .green { background-color: #28A745; }
-    .red { background-color: #DC3545; }
-    .jin-login {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .dollar {
-      position: absolute;
-      top: -50px;
-      font-size: 20px;
-      animation: fall linear infinite;
-      color: green;
-      z-index: 1;
-    }
-    @keyframes fall {
-      to {
-        transform: translateY(110vh);
-        opacity: 0;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container center">
-    <div class="macs-title">MACS</div>
-    <div class="btn-container">
-      <a href="agent-login.html" class="btn blue">Agent Login</a>
-      <a href="agent-signup.html" class="btn green">Agent Sign Up</a>
-      <!-- Jin Login is now properly linked -->
-      <a href="jin-login.html" class="btn red jin-login"><span>😈</span> Jin Login</a>
-    </div>
-  </div>
 
-  <!-- Dollar Rain Script -->
-  <script>
-    const createDollar = () => {
-      const dollar = document.createElement('div');
-      dollar.classList.add('dollar');
-      dollar.innerText = '💲';
-      dollar.style.left = Math.random() * 100 + 'vw';
-      dollar.style.animationDuration = (2 + Math.random() * 3) + 's';
-      document.body.appendChild(dollar);
-
-      setTimeout(() => {
-        dollar.remove();
-      }, 5000);
-    };
-
-    setInterval(createDollar, 200);
-  </script>
-</body>
-</html>
+    .macs-sub {
+      font-size: 16px;
+      color: #666;
