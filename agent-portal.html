@@ -28,7 +28,19 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .info-bar {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 26px;
+      color: #ffd700;
     }
 
     h2, h3 {
@@ -74,15 +86,25 @@
     #agent-name {
       font-weight: bold;
     }
+
+    .datetime {
+      font-size: 14px;
+      color: #ddd;
+    }
   </style>
 </head>
-<body onload="loadUser()">
+<body onload="loadUser(); showTime();">
 
   <div class="container">
+    <div class="info-bar">
+      <h1>💼 MACS - Agent Portal</h1>
+      <div class="datetime" id="datetime"></div>
+      <div class="datetime" id="usdatetime"></div>
+    </div>
+
     <div class="header">
-      <h2>Agent Portal</h2>
+      <span id="agent-name">Agent</span>
       <div>
-        <span id="agent-name">Loading...</span>
         <button onclick="logout()">Logout</button>
         <button onclick="alert('Edit Profile Coming Soon')">Edit Profile</button>
       </div>
@@ -133,16 +155,28 @@
         devices: form[6].value,
         with: form[7].value,
         reason: form[8].value,
+        timestamp: new Date().toLocaleString()
       };
 
-      // Save to localStorage
+      // Save to localStorage (keyed by timestamp or random ID)
+      const key = `report_${Date.now()}`;
       localStorage.setItem('latestReport', JSON.stringify(report));
 
-      // Open jin-portal.html in new tab
-      window.open('jin-portal.html', '_blank');
+      alert("✅ Report submitted successfully!");
 
-      // Reset form
+      // Reset form for next entry
       form.reset();
+    }
+
+    function showTime() {
+      setInterval(() => {
+        const now = new Date();
+        const local = now.toLocaleString('en-IN');
+        const us = now.toLocaleString('en-US', { timeZone: 'America/New_York' });
+
+        document.getElementById('datetime').innerText = `📍 Local Time (India): ${local}`;
+        document.getElementById('usdatetime').innerText = `🗽 USA Time (New York): ${us}`;
+      }, 1000);
     }
   </script>
 
