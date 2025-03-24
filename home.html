@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MACS Access Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to bottom right, #e3edf7, #ffffff);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .wrapper {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 450px;
+    }
+
+    .macs-title {
+      font-size: 34px;
+      font-weight: 700;
+      color: #0a3871;
+      margin-bottom: 8px;
+    }
+
+    .macs-subtitle {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      display: block;
+      padding: 14px;
+      margin: 10px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .btn-blue { background-color: #007BFF; }
+    .btn-blue:hover { background-color: #0056b3; }
+
+    .btn-green { background-color: #28A745; }
+    .btn-green:hover { background-color: #1e7e34; }
+
+    .btn-red { background-color: #DC3545; }
+    .btn-red:hover { background-color: #c82333; }
+
+    .footer {
+      margin-top: 25px;
+      font-size: 12px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+    <div class="macs-title">MACS</div>
+    <div class="macs-subtitle">Secure Access Control Panel</div>
+
+    <a href="agent-login.html" class="btn btn-blue">🔐 Agent Login</a>
+    <a href="agent-signup.html" class="btn btn-green">📝 Agent Sign Up</a>
+    <a href="jin-login.html" class="btn btn-red">😈 Jin Login</a>
+
+    <div class="footer">© 2025 MACS Corporation. All rights reserved.</div>
+  </div>
+
+</body>
+</html>
