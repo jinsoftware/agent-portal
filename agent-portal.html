@@ -32,11 +32,6 @@
       flex-wrap: wrap;
     }
 
-    .info-bar {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
     h1 {
       margin: 0;
       font-size: 26px;
@@ -44,7 +39,6 @@
     }
 
     h2, h3 {
-      text-align: center;
       color: #ffd700;
     }
 
@@ -87,24 +81,37 @@
       font-weight: bold;
     }
 
-    .datetime {
+    .inbox {
+      margin-top: 30px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .message {
+      background: #fff;
+      color: #000;
+      padding: 8px;
+      margin-bottom: 8px;
+      border-radius: 4px;
       font-size: 14px;
-      color: #ddd;
+    }
+
+    .message-time {
+      font-size: 12px;
+      color: gray;
     }
   </style>
 </head>
-<body onload="loadUser(); showTime();">
+<body onload="loadUser(); loadInbox();">
 
   <div class="container">
-    <div class="info-bar">
-      <h1>💼 MACS - Agent Portal</h1>
-      <div class="datetime" id="datetime"></div>
-      <div class="datetime" id="usdatetime"></div>
-    </div>
-
     <div class="header">
-      <span id="agent-name">Agent</span>
+      <h1>Agent Portal</h1>
       <div>
+        <span id="agent-name">Agent</span>
         <button onclick="logout()">Logout</button>
         <button onclick="alert('Edit Profile Coming Soon')">Edit Profile</button>
       </div>
@@ -127,24 +134,38 @@
       <textarea placeholder="Reason of Drop" required></textarea>
       <button type="submit">Submit</button>
     </form>
+
+    <h3>📥 Inbox (Messages from JIN)</h3>
+    <div class="inbox" id="inbox">
+      Loading messages...
+    </div>
   </div>
 
   <script>
     function loadUser() {
-      const name = localStorage.getItem('loggedInAgent');
-      document.getElementById('agent-name').innerText = name || 'No user';
+      const name = localStorage.getItem('loggedInAgent') || 'Agent';
+      document.getElementById('agent-name').innerText = name;
+
+      // Save agent to onlineAgents
+      let agents = JSON.parse(localStorage.getItem('onlineAgents') || "[]");
+      if (!agents.includes(name)) {
+        agents.push(name);
+        localStorage.setItem('onlineAgents', JSON.stringify(agents));
+      }
     }
 
     function logout() {
+      const name = localStorage.getItem('loggedInAgent');
+      let agents = JSON.parse(localStorage.getItem('onlineAgents') || "[]");
+      agents = agents.filter(a => a !== name);
+      localStorage.setItem('onlineAgents', JSON.stringify(agents));
       localStorage.removeItem('loggedInAgent');
       window.location.href = "index.html";
     }
 
     function saveReport(e) {
       e.preventDefault();
-
       const form = document.getElementById('customer-form');
-
       const report = {
         name: form[0].value,
         phone: form[1].value,
@@ -157,26 +178,28 @@
         reason: form[8].value,
         timestamp: new Date().toLocaleString()
       };
-
-      // Save to localStorage (keyed by timestamp or random ID)
       const key = `report_${Date.now()}`;
-      localStorage.setItem('latestReport', JSON.stringify(report));
-
+      localStorage.setItem(key, JSON.stringify(report));
       alert("✅ Report submitted successfully!");
-
-      // Reset form for next entry
       form.reset();
     }
 
-    function showTime() {
-      setInterval(() => {
-        const now = new Date();
-        const local = now.toLocaleString('en-IN');
-        const us = now.toLocaleString('en-US', { timeZone: 'America/New_York' });
+    function loadInbox() {
+      const name = localStorage.getItem('loggedInAgent');
+      const key = `messages_${name}`;
+      const messages = JSON.parse(localStorage.getItem(key) || "[]");
+      const inbox = document.getElementById("inbox");
 
-        document.getElementById('datetime').innerText = `📍 Local Time (India): ${local}`;
-        document.getElementById('usdatetime').innerText = `🗽 USA Time (New York): ${us}`;
-      }, 1000);
+      if (messages.length === 0) {
+        inbox.innerHTML = "<p>No messages found.</p>";
+        return;
+      }
+
+      inbox.innerHTML = messages.map(msg => `
+        <div class="message">
+          ${msg.text}
+          <div class="message-time">${msg.time}</div>
+        </div>`).join('');
     }
   </script>
 
