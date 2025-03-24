@@ -1,119 +1,93 @@
+<!-- Save this as agent-login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MACS Portal Home</title>
+  <title>Agent Login - MACS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body, html {
+    body {
       margin: 0;
-      padding: 0;
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(to bottom right, #e9eff5, #ffffff);
-      height: 100vh;
+      background: #eef3f8;
       display: flex;
       align-items: center;
       justify-content: center;
+      height: 100vh;
     }
 
     .container {
-      text-align: center;
-      padding: 40px 20px;
-      background: white;
+      background: #ffffff;
+      padding: 40px;
       border-radius: 10px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      width: 100%;
       max-width: 400px;
-      width: 90%;
+      text-align: center;
     }
 
-    .macs-title {
-      font-size: 36px;
-      font-weight: 700;
+    h1 {
+      font-size: 32px;
       color: #0a3871;
-      margin-bottom: 5px;
+      margin-bottom: 10px;
     }
 
-    .macs-sub {
+    h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #444;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
       font-size: 16px;
-      color: #666;
-      margin-bottom: 30px;
     }
 
-    .btn-container {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .btn {
+    button {
+      width: 100%;
       padding: 12px;
       font-size: 16px;
-      font-weight: 600;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
+      background: #0a3871;
       color: white;
-      transition: background 0.2s;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
     }
 
-    .blue {
-      background-color: #007BFF;
-    }
-
-    .blue:hover {
-      background-color: #0069d9;
-    }
-
-    .green {
-      background-color: #28A745;
-    }
-
-    .green:hover {
-      background-color: #218838;
-    }
-
-    .red {
-      background-color: #DC3545;
-    }
-
-    .red:hover {
-      background-color: #c82333;
-    }
-
-    .jin-login {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .footer {
-      font-size: 12px;
-      color: #999;
-      margin-top: 25px;
+    button:hover {
+      background: #062955;
     }
   </style>
 </head>
 <body>
-
   <div class="container">
-    <div class="macs-title">MACS</div>
-    <div class="macs-sub">Management Access Control System</div>
-
-    <div class="btn-container">
-      <a href="agent-login.html" class="btn blue">Agent Login</a>
-      <a href="agent-signup.html" class="btn green">Agent Sign Up</a>
-      <a href="jin-login.html" class="btn red jin-login"><span>😈</span> Jin Login</a>
-    </div>
-
-    <div class="footer">© 2025 MACS Portal. All rights reserved.</div>
+    <h1>MACS</h1>
+    <h2>Agent Login</h2>
+    <input type="text" id="login-username" placeholder="Username" />
+    <input type="password" id="login-password" placeholder="Password" />
+    <button onclick="login()">Login</button>
   </div>
 
+  <script>
+    function login() {
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+      const stored = JSON.parse(localStorage.getItem(`agent_${username}`));
+      
+      if (stored && stored.password === password) {
+        localStorage.setItem("loggedInAgent", username);
+        window.location.href = "agent-portal.html"; // make sure this file also exists
+      } else {
+        alert("❌ Invalid credentials");
+      }
+    }
+  </script>
 </body>
 </html>
