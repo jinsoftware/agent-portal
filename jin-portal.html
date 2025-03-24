@@ -1,59 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Jin Portal</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Jin Portal - Customer Report</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
       padding: 20px;
-      background: #f0f8ff;
+      background: #f9f9f9;
     }
-    h2 {
+    .report-box {
+      background: #fff;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      max-width: 500px;
+      margin: auto;
+    }
+    .report-box h2 {
       text-align: center;
-      margin-bottom: 30px;
     }
-    .report {
-      background: white;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
+    .report-box p {
+      margin: 10px 0;
     }
   </style>
 </head>
 <body>
-  <h2>😈 Jin Portal – Submitted Customer Reports</h2>
-  <div id="report-list"></div>
+
+  <div class="report-box">
+    <h2>📄 Customer Report</h2>
+    <div id="report-content">
+      Loading...
+    </div>
+  </div>
 
   <script>
-    window.onload = function () {
-      const container = document.getElementById('report-list');
-      const keys = Object.keys(localStorage).filter(k => k.startsWith('report_'));
+    const data = JSON.parse(localStorage.getItem('latestReport'));
 
-      if (keys.length === 0) {
-        container.innerHTML = '<p>No reports found.</p>';
-        return;
-      }
+    const output = `
+      <p><strong>Name:</strong> ${data.name}</p>
+      <p><strong>Phone:</strong> ${data.phone}</p>
+      <p><strong>Address:</strong> ${data.address}</p>
+      <p><strong>Zip Code:</strong> ${data.zip}</p>
+      <p><strong>Email:</strong> ${data.email}</p>
+      <p><strong>Bank Names:</strong> ${data.banks}</p>
+      <p><strong>Devices:</strong> ${data.devices}</p>
+      <p><strong>Customer With:</strong> ${data.with}</p>
+      <p><strong>Reason of Drop:</strong> ${data.reason}</p>
+    `;
 
-      keys.forEach(key => {
-        const data = JSON.parse(localStorage.getItem(key));
-        const div = document.createElement('div');
-        div.className = 'report';
-        div.innerHTML = `
-          <strong>Customer Name:</strong> ${data.name}<br>
-          <strong>Phone:</strong> ${data.phone}<br>
-          <strong>Address:</strong> ${data.address}<br>
-          <strong>Zip:</strong> ${data.zip}<br>
-          <strong>Email:</strong> ${data.email}<br>
-          <strong>Banks:</strong> ${data.banks}<br>
-          <strong>Devices:</strong> ${data.devices}<br>
-          <strong>Alone/With Someone:</strong> ${data.with}<br>
-          <strong>Reason:</strong> ${data.reason}
-        `;
-        container.appendChild(div);
-      });
-    };
+    document.getElementById('report-content').innerHTML = output;
   </script>
+
 </body>
 </html>
