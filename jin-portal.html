@@ -2,87 +2,133 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>JIN Portal - Customer Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JIN Portal Dashboard</title>
   <style>
     body {
-      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #1d4350, #a43931);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+    header {
+      background: #2c3e50;
+      color: white;
       padding: 20px;
-    }
-
-    .report-box {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(8px);
-      border-radius: 10px;
-      padding: 30px;
-      width: 100%;
-      max-width: 600px;
-      box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
-    }
-
-    .report-box h2 {
       text-align: center;
-      margin-bottom: 20px;
-      color: #ffd700;
     }
-
-    .data-row {
-      margin: 12px 0;
-      font-size: 16px;
-      line-height: 1.6;
+    .dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+      justify-content: center;
     }
-
-    .label {
-      font-weight: bold;
-      color: #00ffff;
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
+      max-height: 500px;
+      overflow-y: auto;
     }
-
-    .value {
-      color: #ffffff;
+    .card h3 {
+      margin-top: 0;
+      color: #2c3e50;
     }
-
-    @media screen and (max-width: 600px) {
-      .report-box {
-        padding: 20px;
-      }
+    .agent {
+      padding: 5px;
+      margin: 5px 0;
+      background: #e0f7fa;
+      border-radius: 4px;
+    }
+    .message-form input, .message-form select {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+    }
+    button {
+      padding: 10px;
+      background: #2980b9;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .report {
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
     }
   </style>
 </head>
 <body>
-  <div class="report-box">
-    <h2>📄 Customer Report</h2>
-    <div id="report-content">
-      Loading data...
+  <header>
+    <h1>JIN Portal Dashboard</h1>
+  </header>
+
+  <div class="dashboard">
+    <div class="card" id="customers">
+      <h3>📁 Customer Information</h3>
+      <div id="customerList">Loading reports...</div>
+    </div>
+
+    <div class="card" id="agents">
+      <h3>🟢 Online Agents</h3>
+      <div id="agentList">Loading agents...</div>
+    </div>
+
+    <div class="card" id="messages">
+      <h3>✉️ Send Message to Agent</h3>
+      <form class="message-form" onsubmit="sendMessage(event)">
+        <select id="agentSelect" required>
+          <option value="">-- Select Agent --</option>
+        </select>
+        <input type="text" id="messageInput" placeholder="Your message..." required />
+        <button type="submit">Send</button>
+      </form>
     </div>
   </div>
 
   <script>
-    const data = JSON.parse(localStorage.getItem('latestReport'));
+    // Load all reports
+    function loadReports() {
+      const container = document.getElementById("customerList");
+      const reports = Object.keys(localStorage)
+        .filter(k => k.startsWith("report_"))
+        .map(k => JSON.parse(localStorage[k]))
+        .reverse();
 
-    if (data) {
-      const container = document.getElementById("report-content");
-      container.innerHTML = `
-        <div class="data-row"><span class="label">👤 Name:</span> <span class="value">${data.name}</span></div>
-        <div class="data-row"><span class="label">📞 Phone:</span> <span class="value">${data.phone}</span></div>
-        <div class="data-row"><span class="label">🏠 Address:</span> <span class="value">${data.address}</span></div>
-        <div class="data-row"><span class="label">📍 Zip Code:</span> <span class="value">${data.zip}</span></div>
-        <div class="data-row"><span class="label">✉️ Email:</span> <span class="value">${data.email}</span></div>
-        <div class="data-row"><span class="label">🏦 Bank Names:</span> <span class="value">${data.banks}</span></div>
-        <div class="data-row"><span class="label">💻 Devices:</span> <span class="value">${data.devices}</span></div>
-        <div class="data-row"><span class="label">👥 Customer With:</span> <span class="value">${data.with}</span></div>
-        <div class="data-row"><span class="label">📝 Reason of Drop:</span> <span class="value">${data.reason}</span></div>
-        <div class="data-row"><span class="label">⏰ Submitted On:</span> <span class="value">${data.timestamp}</span></div>
-      `;
-    } else {
-      document.getElementById("report-content").innerHTML = `<p style="color: orange;">No customer report found in memory.</p>`;
+      if (reports.length === 0) {
+        container.innerHTML = '<p>No reports submitted yet.</p>';
+        return;
+      }
+
+      container.innerHTML = reports.map(r => `
+        <div class="report">
+          <strong>${r.name}</strong><br>
+          📞 ${r.phone}<br>
+          ✉️ ${r.email}<br>
+          💬 ${r.reason}
+        </div>`).join('');
     }
-  </script>
-</body>
-</html>
+
+    // Load online agents
+    function loadAgents() {
+      const agentList = document.getElementById("agentList");
+      const agentSelect = document.getElementById("agentSelect");
+      const agents = JSON.parse(localStorage.getItem("onlineAgents") || "[]");
+
+      agentList.innerHTML = '';
+      agentSelect.innerHTML = '<option value="">-- Select Agent --</option>';
+
+      agents.forEach(name => {
+        agentList.innerHTML += `<div class="agent">${name}</div>`;
+        agentSelect.innerHTML += `<option value="${name}">${name}</option>`;
+      });
+    }
+
+    // Send message to an agent
+    function sendMessage(e) {
+      e.preventDefault
