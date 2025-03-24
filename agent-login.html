@@ -3,39 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Agent Login - MACS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>MACS Portal Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
   <style>
-    body {
+    * {
+      box-sizing: border-box;
+    }
+
+    body, html {
       margin: 0;
       padding: 0;
       font-family: 'Inter', sans-serif;
-      background: #f0f4f8;
+      background: #eef3f8;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
     }
 
     .container {
       background: #ffffff;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
-      width: 100%;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
       max-width: 400px;
+      width: 90%;
       text-align: center;
     }
 
     .macs-title {
-      font-size: 32px;
+      font-size: 36px;
       font-weight: 700;
       color: #0a3871;
-      margin-bottom: 10px;
-      letter-spacing: 1px;
+      margin-bottom: 6px;
     }
 
-    h2 {
-      font-size: 20px;
-      color: #333;
-      margin-bottom:
+    .macs-sub {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .btn-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .btn {
+      display: block;
+      text-decoration: none;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 6px;
+      text
