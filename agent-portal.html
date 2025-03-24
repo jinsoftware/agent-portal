@@ -1,39 +1,22 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Agent Portal</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body onload="loadUser()">
-  <div class="container">
-    <div class="header">
-      <h2>Agent Portal</h2>
-      <div>
-        <span id="agent-name"></span>
-        <button onclick="logout()">Logout</button>
-        <button onclick="alert('Edit Profile Coming Soon')">Edit Profile</button>
-      </div>
-    </div>
+<form id="customer-form" onsubmit="saveReport(event)">
+  <input placeholder="Customer Name"><br>
+  <input placeholder="Phone"><br>
+  <input placeholder="Address"><br>
+  <input placeholder="Zip Code"><br>
+  <input placeholder="Email"><br>
+  <input placeholder="Bank Names"><br>
+  <input placeholder="Devices"><br>
+  <select>
+    <option>Customer Alone</option>
+    <option>Customer With Someone</option>
+  </select><br>
+  <textarea placeholder="Reason of Drop"></textarea><br>
+  <button type="submit">Submit</button>
+</form>
 
-    <h3>Customer Form</h3>
-    <form>
-      <input placeholder="Customer Name"><br>
-      <input placeholder="Phone"><br>
-      <input placeholder="Address"><br>
-      <input placeholder="Zip Code"><br>
-      <input placeholder="Email"><br>
-      <input placeholder="Bank Names"><br>
-      <input placeholder="Devices"><br>
-      <select>
-        <option>Customer Alone</option>
-        <option>Customer With Someone</option>
-      </select><br>
-      <textarea placeholder="Reason of Drop"></textarea><br>
-      <button type="submit">Submit</button>
-    </<form id="customer-form" onsubmit="saveReport(event)">
-><script>
+<script>
   function saveReport(e) {
-    e.preventDefault(); // Form reload होने से रोकेगा
+    e.preventDefault(); // Prevent reload
 
     const form = document.getElementById('customer-form');
 
@@ -49,25 +32,10 @@
       reason: form[8].value,
     };
 
-    const key = `report_${Date.now()}`;
-    localStorage.setItem(key, JSON.stringify(report));
+    // Save to localStorage
+    localStorage.setItem('latestReport', JSON.stringify(report));
 
-    alert('Customer report submitted successfully!');
-    form.reset();
+    // Redirect to jin-portal.html
+    window.location.href = 'jin-portal.html';
   }
 </script>
-
-  </div>
-
-  <script>
-    function loadUser() {
-      const name = localStorage.getItem('loggedInAgent');
-      document.getElementById('agent-name').innerText = name || 'No user';
-    }
-    function logout() {
-      localStorage.removeItem('loggedInAgent');
-      window.location.href = "index.html";
-    }
-  </script>
-</body>
-</html>
