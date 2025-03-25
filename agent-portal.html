@@ -95,7 +95,7 @@
     }
   </style>
 </head>
-<body onload="loadUser(); loadInbox(); showTime(); checkAlarm();">
+<body onload="initPortal();">
 
   <header>
     <h1>MACS - Agent Portal</h1>
@@ -141,12 +141,19 @@
     </div>
   </div>
 
-  <!-- 🔔 Alarm Sound -->
-  <audio id="alarm-sound" loop>
+  <!-- 🔔 Alarm Audio -->
+  <audio id="alarm-sound" loop preload="auto">
     <source src="https://assets.mixkit.co/sfx/download/mixkit-alarm-tone-996.wav" type="audio/wav">
   </audio>
 
   <script>
+    function initPortal() {
+      loadUser();
+      loadInbox();
+      showTime();
+      checkAlarm();
+    }
+
     function loadUser() {
       const name = localStorage.getItem('loggedInAgent') || 'Agent';
       document.getElementById('agent-name').innerText = 'Logged in as: ' + name;
@@ -224,16 +231,13 @@
     }
 
     function checkAlarm() {
+      const alarm = document.getElementById("alarm-sound");
       setInterval(() => {
-        const status = localStorage.getItem("alarmStatus");
-        const alarmSound = document.getElementById("alarm-sound");
-        if (status === "on") {
-          if (alarmSound.paused) {
-            alarmSound.play().catch(err => console.log("Autoplay blocked"));
-          }
+        if (localStorage.getItem("alarmStatus") === "on") {
+          alarm.play().catch(err => console.log("Autoplay issue:", err));
         } else {
-          alarmSound.pause();
-          alarmSound.currentTime = 0;
+          alarm.pause();
+          alarm.currentTime = 0;
         }
       }, 1000);
     }
