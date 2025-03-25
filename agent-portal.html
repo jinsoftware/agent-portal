@@ -18,11 +18,6 @@
       text-align: center;
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-    }
-
     .datetime {
       margin-top: 8px;
       font-size: 14px;
@@ -30,7 +25,7 @@
     }
 
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: 30px auto;
       background: white;
       border-radius: 8px;
@@ -40,7 +35,6 @@
 
     h2 {
       color: #0a3871;
-      margin-bottom: 10px;
     }
 
     input, select, textarea, button {
@@ -74,17 +68,21 @@
       overflow-y: auto;
     }
 
-    .message {
-      background: #fff;
-      border-left: 4px solid #0a3871;
-      padding: 8px;
-      margin-bottom: 8px;
-      border-radius: 4px;
+    .links-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+      justify-content: center;
     }
 
-    .message-time {
-      font-size: 12px;
-      color: gray;
+    .links-box a {
+      padding: 12px 20px;
+      background-color: #007BFF;
+      color: white;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
     }
 
     .top-bar {
@@ -92,10 +90,6 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 10px;
-    }
-
-    .top-bar span {
-      font-weight: bold;
     }
 
     .logout-btn {
@@ -141,10 +135,14 @@
       <button type="submit">Submit</button>
     </form>
 
-    <h2>📥 Inbox (Messages from JIN)</h2>
-    <div class="inbox" id="inbox">
-      Loading messages...
+    <div class="links-box">
+      <a href="apple-links.html" target="_blank">🍏 Apple</a>
+      <a href="microsoft-links.html" target="_blank">🪟 Microsoft</a>
+      <a href="ftc-links.html" target="_blank">🛡️ FTC</a>
     </div>
+
+    <h2>📥 Inbox (Messages from JIN)</h2>
+    <div class="inbox" id="inbox">Loading messages...</div>
   </div>
 
   <script>
@@ -181,10 +179,16 @@
         devices: form[6].value,
         with: form[7].value,
         reason: form[8].value,
-        timestamp: new Date().toLocaleString()
+        timestamp: new Date().toLocaleString(),
+        submittedBy: localStorage.getItem('loggedInAgent') || 'Unknown'
       };
       const key = `report_${Date.now()}`;
       localStorage.setItem(key, JSON.stringify(report));
+
+      let allReports = JSON.parse(localStorage.getItem('allReports') || '[]');
+      allReports.push(report);
+      localStorage.setItem('allReports', JSON.stringify(allReports));
+
       alert("✅ Report submitted successfully!");
       form.reset();
     }
