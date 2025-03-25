@@ -89,6 +89,10 @@
       color: white;
       cursor: pointer;
     }
+    .alarm-control {
+      margin-top: 20px;
+      text-align: center;
+    }
   </style>
 </head>
 <body onload="loadUser(); loadInbox(); showTime(); checkAlarm();">
@@ -131,11 +135,15 @@
 
     <h2>📥 Inbox (Messages from JIN)</h2>
     <div class="inbox" id="inbox">Loading messages...</div>
+
+    <div class="alarm-control">
+      <button onclick="stopAlarm()">🛑 Stop Alarm</button>
+    </div>
   </div>
 
-  <!-- 🔔 Alarm sound -->
+  <!-- 🔔 Alarm Sound -->
   <audio id="alarm-sound" loop>
-    <source src="https://www.soundjay.com/button/beep-07.wav" type="audio/wav">
+    <source src="https://assets.mixkit.co/sfx/download/mixkit-alarm-tone-996.wav" type="audio/wav">
   </audio>
 
   <script>
@@ -220,14 +228,18 @@
         const status = localStorage.getItem("alarmStatus");
         const alarmSound = document.getElementById("alarm-sound");
         if (status === "on") {
-          if (alarmSound.paused) alarmSound.play();
-        } else {
-          if (!alarmSound.paused) {
-            alarmSound.pause();
-            alarmSound.currentTime = 0;
+          if (alarmSound.paused) {
+            alarmSound.play().catch(err => console.log("Autoplay blocked"));
           }
+        } else {
+          alarmSound.pause();
+          alarmSound.currentTime = 0;
         }
       }, 1000);
+    }
+
+    function stopAlarm() {
+      localStorage.setItem("alarmStatus", "off");
     }
   </script>
 </body>
