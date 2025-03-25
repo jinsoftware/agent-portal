@@ -35,39 +35,57 @@
     h2 {
       color: #0a3871;
     }
-    .report {
+    .customer-list {
       background: #fff;
       padding: 15px;
-      margin-bottom: 15px;
       border-radius: 8px;
       box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
     }
-    .message-box {
-      margin-top: 30px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-    }
-    textarea {
-      width: 100%;
-      height: 60px;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-    .online-list {
-      background: #fff;
+    .customer-item {
       padding: 10px;
-      margin-top: 20px;
-      border-radius: 6px;
+      border-bottom: 1px solid #ccc;
+      cursor: pointer;
     }
-    .footer-btns {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
+    .customer-item:hover {
+      background-color: #eef;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .close-btn {
+      position: absolute;
+      right: 10px;
+      top: 5px;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      color: red;
+    }
+    #popup-data p {
+      margin: 6px 0;
     }
   </style>
 </head>
-<body onload="loadReports(); loadAgents();">
+<body onload="loadCustomers()">
 
   <header>
     <h1>JIN Portal - MACS</h1>
@@ -78,22 +96,16 @@
     <button onclick="logout()">Logout</button>
   </div>
 
-  <div id="report-container">Loading reports...</div>
-
-  <div class="message-box">
-    <h3>📤 Send Message to Agent</h3>
-    <select id="agent-select"></select>
-    <textarea id="message-text" placeholder="Enter your message..."></textarea>
-    <div class="footer-btns">
-      <button onclick="sendMessage()">Send Message</button>
-      <button onclick="triggerAlarm()">🔔 Wake Up Alarm</button>
-      <button onclick="stopAlarm()">🛑 Stop Alarm</button>
-    </div>
+  <div class="customer-list" id="customer-list">
+    <p>Loading customers...</p>
   </div>
 
-  <div class="online-list">
-    <h3>🟢 Online Agents</h3>
-    <ul id="online-agents"></ul>
+  <!-- Lightbox Modal -->
+  <div class="modal" id="popup">
+    <div class="modal-content" id="popup-content">
+      <span class="close-btn" onclick="closePopup()">×</span>
+      <div id="popup-data"></div>
+    </div>
   </div>
 
   <script>
@@ -102,92 +114,47 @@
       window.location.href = "index.html";
     }
 
-    function loadReports() {
-      const container = document.getElementById("report-container");
-      const allReports = JSON.parse(localStorage.getItem('allReports') || '[]');
+    function loadCustomers() {
+      const container = document.getElementById("customer-list");
+      const reports = JSON.parse(localStorage.getItem("allReports") || "[]");
 
-      if (allReports.length === 0) {
+      if (reports.length === 0) {
         container.innerHTML = "<p>No reports found.</p>";
         return;
       }
 
-      container.innerHTML = allReports.map((r, i) => {
-        const reportId = `report_${i}`;
-        return `
-        <div class="report" id="${reportId}">
-          <p><strong>Agent:</strong> ${r.submittedBy}</p>
-          <p><strong>Name:</strong> ${r.name}</p>
-          <p><strong>Phone:</strong> ${r.phone}</p>
-          <p><strong>Address:</strong> ${r.address}</p>
-          <p><strong>Zip:</strong> ${r.zip}</p>
-          <p><strong>Email:</strong> ${r.email}</p>
-          <p><strong>Bank:</strong> ${r.banks}</p>
-          <p><strong>Devices:</strong> ${r.devices}</p>
-          <p><strong>Situation:</strong> ${r.with}</p>
-          <p><strong>Reason:</strong> ${r.reason}</p>
-          <p><strong>Timestamp:</strong> ${r.timestamp}</p>
-          <button onclick="downloadPDF('${reportId}')">📄 Download PDF</button>
+      container.innerHTML = reports.map((r, i) => {
+        return `<div class="customer-item" onclick="openPopup(${i})">
+          <strong>${r.name}</strong> — ${r.phone}
         </div>`;
       }).join('');
     }
 
-    function downloadPDF(reportId) {
-      const element = document.getElementById(reportId);
-      const opt = {
-        margin:       0.5,
-        filename:     reportId + '.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
-      html2pdf().from(element).set(opt).save();
+    function openPopup(index) {
+      const reports = JSON.parse(localStorage.getItem("allReports") || "[]");
+      const r = reports[index];
+      const details = `
+        <h3>Customer Details</h3>
+        <p><strong>Agent:</strong> ${r.submittedBy}</p>
+        <p><strong>Name:</strong> ${r.name}</p>
+        <p><strong>Phone:</strong> ${r.phone}</p>
+        <p><strong>Address:</strong> ${r.address}</p>
+        <p><strong>Zip Code:</strong> ${r.zip}</p>
+        <p><strong>Email:</strong> ${r.email}</p>
+        <p><strong>Bank Names:</strong> ${r.banks}</p>
+        <p><strong>Devices:</strong> ${r.devices}</p>
+        <p><strong>Situation:</strong> ${r.with}</p>
+        <p><strong>Drop Reason:</strong> ${r.reason}</p>
+        <p><strong>Timestamp:</strong> ${r.timestamp}</p>
+      `;
+      document.getElementById("popup-data").innerHTML = details;
+      document.getElementById("popup").style.display = "flex";
     }
 
-    function loadAgents() {
-      const online = JSON.parse(localStorage.getItem("onlineAgents") || "[]");
-      const ul = document.getElementById("online-agents");
-      const select = document.getElementById("agent-select");
-
-      ul.innerHTML = "";
-      select.innerHTML = "";
-
-      if (online.length === 0) {
-        ul.innerHTML = "<li>No agents online</li>";
-        return;
-      }
-
-      online.forEach(agent => {
-        ul.innerHTML += `<li>${agent}</li>`;
-        select.innerHTML += `<option value="${agent}">${agent}</option>`;
-      });
-    }
-
-    function sendMessage() {
-      const to = document.getElementById("agent-select").value;
-      const text = document.getElementById("message-text").value.trim();
-      if (!text) return alert("Please enter a message.");
-
-      const key = `messages_${to}`;
-      const messages = JSON.parse(localStorage.getItem(key) || "[]");
-      messages.push({ text, time: new Date().toLocaleString() });
-      localStorage.setItem(key, JSON.stringify(messages));
-      alert("✅ Message sent!");
-      document.getElementById("message-text").value = "";
-    }
-
-    function triggerAlarm() {
-      localStorage.setItem("alarmStatus", "on");
-      alert("🔔 Alarm triggered on Agent Portal!");
-    }
-
-    function stopAlarm() {
-      localStorage.setItem("alarmStatus", "off");
-      alert("🛑 Alarm stopped.");
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
     }
   </script>
-
-  <!-- jsPDF and html2pdf for PDF download -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 </body>
 </html>
