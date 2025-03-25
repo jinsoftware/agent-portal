@@ -1,134 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JIN Portal Dashboard</title>
+  <title>JIN Portal - Customer Reports</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
       margin: 0;
-      padding: 0;
-      background: #f4f4f4;
-    }
-    header {
-      background: #2c3e50;
-      color: white;
       padding: 20px;
+    }
+    h1 {
+      color: #0a3871;
       text-align: center;
     }
-    .dashboard {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      padding: 20px;
-      justify-content: center;
-    }
-    .card {
-      background: white;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 300px;
-      max-height: 500px;
-      overflow-y: auto;
-    }
-    .card h3 {
-      margin-top: 0;
-      color: #2c3e50;
-    }
-    .agent {
-      padding: 5px;
-      margin: 5px 0;
-      background: #e0f7fa;
-      border-radius: 4px;
-    }
-    .message-form input, .message-form select {
-      width: 100%;
-      padding: 8px;
-      margin: 5px 0;
-    }
-    button {
-      padding: 10px;
-      background: #2980b9;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
     .report {
-      border-bottom: 1px solid #ddd;
-      margin-bottom: 10px;
-      padding-bottom: 10px;
+      background: #fff;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      max-width: 800px;
+    }
+    .report h3 {
+      margin: 0 0 10px;
+      color: #333;
+    }
+    .report p {
+      margin: 4px 0;
+      font-size: 14px;
+      color: #555;
     }
   </style>
 </head>
-<body>
-  <header>
-    <h1>JIN Portal Dashboard</h1>
-  </header>
+<body onload="loadReports()">
 
-  <div class="dashboard">
-    <div class="card" id="customers">
-      <h3>📁 Customer Information</h3>
-      <div id="customerList">Loading reports...</div>
-    </div>
+  <h1>📁 Customer Information (from Agent Portal)</h1>
 
-    <div class="card" id="agents">
-      <h3>🟢 Online Agents</h3>
-      <div id="agentList">Loading agents...</div>
-    </div>
-
-    <div class="card" id="messages">
-      <h3>✉️ Send Message to Agent</h3>
-      <form class="message-form" onsubmit="sendMessage(event)">
-        <select id="agentSelect" required>
-          <option value="">-- Select Agent --</option>
-        </select>
-        <input type="text" id="messageInput" placeholder="Your message..." required />
-        <button type="submit">Send</button>
-      </form>
-    </div>
+  <div id="report-container">
+    <p>Loading reports...</p>
   </div>
 
   <script>
-    // Load all reports
     function loadReports() {
-      const container = document.getElementById("customerList");
-      const reports = Object.keys(localStorage)
-        .filter(k => k.startsWith("report_"))
-        .map(k => JSON.parse(localStorage[k]))
-        .reverse();
+      const container = document.getElementById("report-container");
+      const allReports = JSON.parse(localStorage.getItem('allReports') || '[]');
 
-      if (reports.length === 0) {
-        container.innerHTML = '<p>No reports submitted yet.</p>';
+      if (allReports.length === 0) {
+        container.innerHTML = "<p>No reports found.</p>";
         return;
       }
 
-      container.innerHTML = reports.map(r => `
+      container.innerHTML = allReports.map((r, index) => `
         <div class="report">
-          <strong>${r.name}</strong><br>
-          📞 ${r.phone}<br>
-          ✉️ ${r.email}<br>
-          💬 ${r.reason}
-        </div>`).join('');
+          <h3>🧾 Report #${index + 1}</h3>
+          <p><strong>Agent:</strong> ${r.submittedBy}</p>
+          <p><strong>Name:</strong> ${r.name}</p>
+          <p><strong>Phone:</strong> ${r.phone}</p>
+          <p><strong>Address:</strong> ${r.address}</p>
+          <p><strong>Zip:</strong> ${r.zip}</p>
+          <p><strong>Email:</strong> ${r.email}</p>
+          <p><strong>Bank Names:</strong> ${r.banks}</p>
+          <p><strong>Devices:</strong> ${r.devices}</p>
+          <p><strong>Situation:</strong> ${r.with}</p>
+          <p><strong>Drop Reason:</strong> ${r.reason}</p>
+          <p><strong>Submitted At:</strong> ${r.timestamp}</p>
+        </div>
+      `).join('');
     }
+  </script>
 
-    // Load online agents
-    function loadAgents() {
-      const agentList = document.getElementById("agentList");
-      const agentSelect = document.getElementById("agentSelect");
-      const agents = JSON.parse(localStorage.getItem("onlineAgents") || "[]");
-
-      agentList.innerHTML = '';
-      agentSelect.innerHTML = '<option value="">-- Select Agent --</option>';
-
-      agents.forEach(name => {
-        agentList.innerHTML += `<div class="agent">${name}</div>`;
-        agentSelect.innerHTML += `<option value="${name}">${name}</option>`;
-      });
-    }
-
-    // Send message to an agent
-    function sendMessage(e) {
-      e.preventDefault
+</body>
+</html>
