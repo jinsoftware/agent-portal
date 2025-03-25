@@ -2,10 +2,11 @@
 <html>
 <head>
   <title>MACS - JIN Portal</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #eef1f5;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f8fc;
       margin: 0;
       padding: 0;
     }
@@ -16,15 +17,16 @@
       text-align: center;
     }
     .container {
-      max-width: 1000px;
+      max-width: 1100px;
       margin: 30px auto;
       background: white;
       padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
     h2 {
       color: #0a3871;
+      margin-top: 30px;
     }
     button {
       padding: 10px 15px;
@@ -35,21 +37,18 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      margin-right: 10px;
+      margin: 10px 5px;
     }
     button:hover {
       background-color: #062955;
     }
-    select, textarea {
+    select, textarea, input {
       width: 100%;
       padding: 10px;
       margin: 10px 0;
     }
-    .report-list {
-      margin-top: 20px;
-    }
     .report-item {
-      background: #f9f9f9;
+      background: #f1f3f5;
       padding: 10px;
       margin: 5px 0;
       border-radius: 4px;
@@ -59,7 +58,7 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.6);
       justify-content: center;
       align-items: center;
       z-index: 999;
@@ -71,149 +70,163 @@
       width: 90%;
       max-width: 600px;
     }
-    .online-agents {
-      margin-top: 20px;
-    }
     .footer {
-      margin-top: 30px;
+      margin-top: 40px;
       font-size: 12px;
       color: gray;
       text-align: center;
     }
+    canvas {
+      max-width: 100%;
+      background: #fdfdfd;
+      border-radius: 8px;
+    }
   </style>
 </head>
-<body onload="loadData()">
+<body onload="loadData(); renderChart();">
 
-  <header>
-    <h1>MACS - JIN Portal</h1>
-  </header>
+<header>
+  <h1>MACS - JIN Portal</h1>
+</header>
 
-  <div class="container">
-    <h2>👥 Online Agents</h2>
-    <div id="online-agents">Loading...</div>
+<div class="container">
+  <h2>👥 Online Agents</h2>
+  <div id="online-agents">Loading...</div>
 
-    <h2>💬 Send Message to Agent</h2>
-    <select id="agent-select"></select>
-    <textarea id="message-text" placeholder="Type your message here..."></textarea>
-    <button onclick="sendMessage()">Send Message</button>
+  <h2>💬 Send Message to Agent</h2>
+  <select id="agent-select"></select>
+  <textarea id="message-text" placeholder="Type your message here..."></textarea>
+  <button onclick="sendMessage()">Send Message</button>
 
-    <h2>📁 Customer Information</h2>
-    <div class="report-list" id="report-list">Loading reports...</div>
+  <h2>📁 Customer Reports</h2>
+  <div id="report-list">Loading reports...</div>
 
-    <h2>🔔 Wake Up Alarm</h2>
-    <button onclick="triggerAlarm()">🚨 Trigger Alarm</button>
+  <h2>📊 Transfers & Sales Chart</h2>
+  <input type="text" id="entryLabel" placeholder="Enter Label (e.g. Transfer 1)">
+  <input type="number" id="entryValue" placeholder="Enter Value">
+  <button onclick="addChartData()">➕ Add Entry</button>
+  <canvas id="salesChart" height="120"></canvas>
 
-    <button onclick="logout()" style="background:#dc3545;">Logout</button>
+  <h2>🔔 Wake Up Alarm</h2>
+  <button onclick="triggerAlarm()">🚨 Trigger Alarm</button>
+  <button onclick="logout()" style="background:#dc3545;">Logout</button>
 
-    <div class="footer">© 2025 MACS. All rights reserved.</div>
-  </div>
+  <div class="footer">© 2025 MACS. All rights reserved.</div>
+</div>
 
-  <!-- Lightbox Popup -->
-  <div class="lightbox" id="lightbox" onclick="this.style.display='none'">
-    <div class="lightbox-content" id="lightbox-content" onclick="event.stopPropagation()"></div>
-  </div>
+<div class="lightbox" id="lightbox" onclick="this.style.display='none'">
+  <div class="lightbox-content" id="lightbox-content" onclick="event.stopPropagation()"></div>
+</div>
 
-  <script>
-    function loadData() {
-      loadAgents();
-      loadReports();
+<script>
+  function loadData() {
+    loadAgents();
+    loadReports();
+  }
+
+  function loadAgents() {
+    const agents = JSON.parse(localStorage.getItem("onlineAgents") || "[]");
+    document.getElementById("online-agents").innerHTML = agents.length === 0
+      ? "No agents online."
+      : "<ul>" + agents.map(a => "<li>" + a + "</li>").join("") + "</ul>";
+    document.getElementById("agent-select").innerHTML = agents.map(a => `<option value="${a}">${a}</option>`).join("");
+  }
+
+  function sendMessage() {
+    const agent = document.getElementById("agent-select").value;
+    const text = document.getElementById("message-text").value.trim();
+    if (!text) return alert("Enter a message.");
+    const key = "messages_" + agent;
+    const old = JSON.parse(localStorage.getItem(key) || "[]");
+    old.push({ text, time: new Date().toLocaleString() });
+    localStorage.setItem(key, JSON.stringify(old));
+    alert("Message sent to " + agent);
+    document.getElementById("message-text").value = "";
+  }
+
+  function loadReports() {
+    const reports = JSON.parse(localStorage.getItem("allReports") || "[]");
+    const list = document.getElementById("report-list");
+    if (reports.length === 0) {
+      list.innerHTML = "<p>No reports found.</p>";
+      return;
     }
+    list.innerHTML = reports.map((r, i) => `
+      <div class="report-item" onclick="showReport(${i})">
+        📄 ${r.name} (${r.phone})
+      </div>`).join("");
+  }
 
-    function loadAgents() {
-      const agents = JSON.parse(localStorage.getItem("onlineAgents") || "[]");
-      const list = document.getElementById("online-agents");
-      const dropdown = document.getElementById("agent-select");
-      if (agents.length === 0) {
-        list.innerText = "No agents online.";
-        dropdown.innerHTML = "<option disabled selected>No agent available</option>";
-        return;
+  function showReport(index) {
+    const reports = JSON.parse(localStorage.getItem("allReports") || "[]");
+    const r = reports[index];
+    const content = document.getElementById("lightbox-content");
+    content.innerHTML = `
+      <h3>Customer Report</h3>
+      <p><strong>Name:</strong> ${r.name}</p>
+      <p><strong>Phone:</strong> ${r.phone}</p>
+      <p><strong>Address:</strong> ${r.address}</p>
+      <p><strong>Zip:</strong> ${r.zip}</p>
+      <p><strong>Email:</strong> ${r.email}</p>
+      <p><strong>Bank:</strong> ${r.banks}</p>
+      <p><strong>Devices:</strong> ${r.devices}</p>
+      <p><strong>With:</strong> ${r.with}</p>
+      <p><strong>Reason:</strong> ${r.reason}</p>
+      <p><strong>Submitted by:</strong> ${r.submittedBy}</p>
+      <p><strong>Time:</strong> ${r.timestamp}</p>
+    `;
+    document.getElementById("lightbox").style.display = "flex";
+  }
+
+  function logout() {
+    alert("Logged out.");
+    location.reload();
+  }
+
+  function triggerAlarm() {
+    localStorage.setItem("alarmStatus", "on");
+    alert("🚨 Alarm triggered to Agent Portal!");
+  }
+
+  let chart;
+  function renderChart() {
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    const saved = JSON.parse(localStorage.getItem("chartData") || "[]");
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: saved.map(e => e.label),
+        datasets: [{
+          label: 'Transfer / Sale Value',
+          data: saved.map(e => e.value),
+          backgroundColor: '#0a3871'
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
       }
-      list.innerHTML = "<ul>" + agents.map(a => "<li>" + a + "</li>").join("") + "</ul>";
-      dropdown.innerHTML = agents.map(a => `<option value="${a}">${a}</option>`).join("");
-    }
+    });
+  }
 
-    function sendMessage() {
-      const agent = document.getElementById("agent-select").value;
-      const text = document.getElementById("message-text").value.trim();
-      if (!text) return alert("Please enter a message.");
-      const key = "messages_" + agent;
-      const old = JSON.parse(localStorage.getItem(key) || "[]");
-      old.push({ text, time: new Date().toLocaleString() });
-      localStorage.setItem(key, JSON.stringify(old));
-      alert("Message sent to " + agent);
-      document.getElementById("message-text").value = "";
-    }
+  function addChartData() {
+    const label = document.getElementById("entryLabel").value.trim();
+    const value = parseInt(document.getElementById("entryValue").value);
+    if (!label || isNaN(value)) return alert("Enter valid label and value.");
+    chart.data.labels.push(label);
+    chart.data.datasets[0].data.push(value);
+    chart.update();
 
-    function loadReports() {
-      const reports = JSON.parse(localStorage.getItem("allReports") || "[]");
-      const list = document.getElementById("report-list");
-      if (reports.length === 0) {
-        list.innerHTML = "<p>No reports found.</p>";
-        return;
-      }
-      list.innerHTML = reports.map((r, i) => `
-        <div class="report-item" onclick="showReport(${i})">
-          📄 ${r.name} (${r.phone})
-        </div>`).join("");
-    }
+    const stored = JSON.parse(localStorage.getItem("chartData") || "[]");
+    stored.push({ label, value });
+    localStorage.setItem("chartData", JSON.stringify(stored));
 
-    function showReport(index) {
-      const reports = JSON.parse(localStorage.getItem("allReports") || "[]");
-      const r = reports[index];
-      const box = document.getElementById("lightbox");
-      const content = document.getElementById("lightbox-content");
-      content.innerHTML = `
-        <h3>Customer Report</h3>
-        <p><strong>Name:</strong> ${r.name}</p>
-        <p><strong>Phone:</strong> ${r.phone}</p>
-        <p><strong>Address:</strong> ${r.address}</p>
-        <p><strong>Zip:</strong> ${r.zip}</p>
-        <p><strong>Email:</strong> ${r.email}</p>
-        <p><strong>Bank:</strong> ${r.banks}</p>
-        <p><strong>Devices:</strong> ${r.devices}</p>
-        <p><strong>With:</strong> ${r.with}</p>
-        <p><strong>Reason:</strong> ${r.reason}</p>
-        <p><strong>Submitted by:</strong> ${r.submittedBy}</p>
-        <p><strong>Time:</strong> ${r.timestamp}</p>
-        <button onclick="downloadPDF(${index})">Download PDF</button>
-      `;
-      box.style.display = "flex";
-    }
-
-    function downloadPDF(index) {
-      const reports = JSON.parse(localStorage.getItem("allReports") || "[]");
-      const r = reports[index];
-      const text = `
-Customer Report:
-Name: ${r.name}
-Phone: ${r.phone}
-Address: ${r.address}
-Zip: ${r.zip}
-Email: ${r.email}
-Bank: ${r.banks}
-Devices: ${r.devices}
-With: ${r.with}
-Reason: ${r.reason}
-Submitted by: ${r.submittedBy}
-Time: ${r.timestamp}
-      `;
-      const blob = new Blob([text], { type: "text/plain" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "report_" + r.name + ".txt";
-      link.click();
-    }
-
-    function triggerAlarm() {
-      localStorage.setItem("alarmStatus", "on");
-      alert("🚨 Alarm triggered to Agent Portal!");
-    }
-
-    function logout() {
-      alert("Logged out!");
-      location.reload();
-    }
-  </script>
+    document.getElementById("entryLabel").value = "";
+    document.getElementById("entryValue").value = "";
+  }
+</script>
 
 </body>
 </html>
