@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>MACS Agent Portal</title>
+  <title>MACS - Agent Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <style>
     body {
@@ -10,17 +10,20 @@
       background-color: #eef1f5;
       color: #333;
     }
+
     header {
       background-color: #0a3871;
       color: white;
       padding: 20px;
       text-align: center;
     }
+
     .datetime {
       margin-top: 8px;
       font-size: 14px;
       color: #cde0f7;
     }
+
     .container {
       max-width: 900px;
       margin: 30px auto;
@@ -29,9 +32,11 @@
       box-shadow: 0 0 12px rgba(0,0,0,0.1);
       padding: 30px;
     }
+
     h2 {
       color: #0a3871;
     }
+
     input, select, textarea, button {
       width: 100%;
       padding: 10px;
@@ -40,6 +45,7 @@
       border-radius: 5px;
       border: 1px solid #ccc;
     }
+
     button {
       background: #0a3871;
       color: white;
@@ -47,9 +53,11 @@
       font-weight: bold;
       cursor: pointer;
     }
+
     button:hover {
       background: #062955;
     }
+
     .inbox {
       margin-top: 30px;
       background: #f8f9fa;
@@ -59,6 +67,7 @@
       max-height: 200px;
       overflow-y: auto;
     }
+
     .links-box {
       display: flex;
       flex-wrap: wrap;
@@ -66,6 +75,7 @@
       margin-top: 20px;
       justify-content: center;
     }
+
     .links-box a {
       padding: 12px 20px;
       background-color: #007BFF;
@@ -74,12 +84,14 @@
       text-decoration: none;
       font-weight: bold;
     }
+
     .top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 10px;
     }
+
     .logout-btn {
       background: #dc3545;
       padding: 6px 10px;
@@ -89,13 +101,9 @@
       color: white;
       cursor: pointer;
     }
-    .alarm-control {
-      margin-top: 20px;
-      text-align: center;
-    }
   </style>
 </head>
-<body onload="initPortal();">
+<body onload="loadUser(); loadInbox(); showTime(); checkAlarm();">
 
   <header>
     <h1>MACS - Agent Portal</h1>
@@ -136,24 +144,11 @@
     <h2>📥 Inbox (Messages from JIN)</h2>
     <div class="inbox" id="inbox">Loading messages...</div>
 
-    <div class="alarm-control">
-      <button onclick="stopAlarm()">🛑 Stop Alarm</button>
-    </div>
+    <audio id="alarm-sound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+    <button onclick="stopAlarm()" style="margin-top: 10px;">🛑 Stop Alarm</button>
   </div>
 
-  <!-- 🔔 Alarm Audio -->
-  <audio id="alarm-sound" loop preload="auto">
-    <source src="https://assets.mixkit.co/sfx/download/mixkit-alarm-tone-996.wav" type="audio/wav">
-  </audio>
-
   <script>
-    function initPortal() {
-      loadUser();
-      loadInbox();
-      showTime();
-      checkAlarm();
-    }
-
     function loadUser() {
       const name = localStorage.getItem('loggedInAgent') || 'Agent';
       document.getElementById('agent-name').innerText = 'Logged in as: ' + name;
@@ -171,7 +166,6 @@
       agents = agents.filter(a => a !== name);
       localStorage.setItem('onlineAgents', JSON.stringify(agents));
       localStorage.removeItem('loggedInAgent');
-      localStorage.setItem("alarmStatus", "off");
       window.location.href = "index.html";
     }
 
@@ -231,20 +225,20 @@
     }
 
     function checkAlarm() {
-      const alarm = document.getElementById("alarm-sound");
       setInterval(() => {
         if (localStorage.getItem("alarmStatus") === "on") {
-          alarm.play().catch(err => console.log("Autoplay issue:", err));
-        } else {
-          alarm.pause();
-          alarm.currentTime = 0;
+          const sound = document.getElementById("alarm-sound");
+          sound.play();
         }
-      }, 1000);
+      }, 3000);
     }
 
     function stopAlarm() {
       localStorage.setItem("alarmStatus", "off");
+      document.getElementById("alarm-sound").pause();
+      document.getElementById("alarm-sound").currentTime = 0;
     }
   </script>
+
 </body>
 </html>
