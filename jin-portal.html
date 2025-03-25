@@ -80,12 +80,27 @@
       cursor: pointer;
       color: red;
     }
-    #popup-data p {
-      margin: 6px 0;
+    .message-box, .online-list {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    }
+    textarea {
+      width: 100%;
+      height: 60px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    .footer-btns {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
     }
   </style>
 </head>
-<body onload="loadCustomers()">
+<body onload="loadCustomers(); loadAgents();">
 
   <header>
     <h1>JIN Portal - MACS</h1>
@@ -106,6 +121,22 @@
       <span class="close-btn" onclick="closePopup()">×</span>
       <div id="popup-data"></div>
     </div>
+  </div>
+
+  <div class="message-box">
+    <h3>📤 Send Message to Agent</h3>
+    <select id="agent-select"></select>
+    <textarea id="message-text" placeholder="Enter your message..."></textarea>
+    <div class="footer-btns">
+      <button onclick="sendMessage()">Send Message</button>
+      <button onclick="triggerAlarm()">🔔 Wake Up Alarm</button>
+      <button onclick="stopAlarm()">🛑 Stop Alarm</button>
+    </div>
+  </div>
+
+  <div class="online-list">
+    <h3>🟢 Online Agents</h3>
+    <ul id="online-agents"></ul>
   </div>
 
   <script>
@@ -154,7 +185,48 @@
     function closePopup() {
       document.getElementById("popup").style.display = "none";
     }
-  </script>
 
+    function loadAgents() {
+      const online = JSON.parse(localStorage.getItem("onlineAgents") || "[]");
+      const ul = document.getElementById("online-agents");
+      const select = document.getElementById("agent-select");
+
+      ul.innerHTML = "";
+      select.innerHTML = "";
+
+      if (online.length === 0) {
+        ul.innerHTML = "<li>No agents online</li>";
+        return;
+      }
+
+      online.forEach(agent => {
+        ul.innerHTML += `<li>${agent}</li>`;
+        select.innerHTML += `<option value="${agent}">${agent}</option>`;
+      });
+    }
+
+    function sendMessage() {
+      const to = document.getElementById("agent-select").value;
+      const text = document.getElementById("message-text").value.trim();
+      if (!text) return alert("Please enter a message.");
+
+      const key = `messages_${to}`;
+      const messages = JSON.parse(localStorage.getItem(key) || "[]");
+      messages.push({ text, time: new Date().toLocaleString() });
+      localStorage.setItem(key, JSON.stringify(messages));
+      alert("✅ Message sent!");
+      document.getElementById("message-text").value = "";
+    }
+
+    function triggerAlarm() {
+      localStorage.setItem("alarmStatus", "on");
+      alert("🔔 Alarm triggered on Agent Portal!");
+    }
+
+    function stopAlarm() {
+      localStorage.setItem("alarmStatus", "off");
+      alert("🛑 Alarm stopped.");
+    }
+  </script>
 </body>
 </html>
